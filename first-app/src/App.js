@@ -21,12 +21,26 @@ class App extends Component {
     })
   }
 
+  
+
   deletePersonHandler = (personIndex) => {
     // DONT DO THIS: const persons = this.state.persons;
     // THIS IS OKAY: const persons = this.state.persons.slice();
     // The spread operator below is the preferred and modern way of copying and creating a new array
     const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
+    this.setState({
+      persons: persons
+    });
+  }
+
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(person => person.id === id);
+    const person = {...this.state.persons[personIndex]};
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons]
+    persons[personIndex] = person;
     this.setState({
       persons: persons
     });
@@ -45,6 +59,7 @@ class App extends Component {
                 name={person.name} 
                 age={person.age} 
                 deletePerson={() => this.deletePersonHandler(index)}
+                changeNameHandler={(event) => this.nameChangedHandler(event, person.id)}
                 key={person.id}/>
             )
           })}
