@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
-
-import Person from "./Person/Person"
-
+import ErrorBoundary from '../ErrorBoundary/ErrorBoundary'
+import Cockpit from '../components/Cockpit/Cockpit';
+import Persons from '../components/Persons/Persons';
 
 class App extends Component {
 
@@ -24,9 +24,6 @@ class App extends Component {
   
 
   deletePersonHandler = (personIndex) => {
-    // DONT DO THIS: const persons = this.state.persons;
-    // THIS IS OKAY: const persons = this.state.persons.slice();
-    // The spread operator below is the preferred and modern way of copying and creating a new array
     const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
     this.setState({
@@ -48,33 +45,43 @@ class App extends Component {
 
   render() {
 
+    
+
     let persons = null;
 
     if (this.state.showPeople) {
       persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return (
-              <Person 
-                name={person.name} 
-                age={person.age} 
-                deletePerson={() => this.deletePersonHandler(index)}
-                changeNameHandler={(event) => this.nameChangedHandler(event, person.id)}
-                key={person.id}/>
-            )
-          })}
-        </div>  
+        <Persons 
+          persons={this.state.persons} 
+          nameChangedHandler={this.nameChangedHandler} 
+          deletePersonHandler={this.deletePersonHandler}>
+        </Persons>
       )
+      // style.backgroundColor = 'red';
+      // style[':hover'] = {
+      //   backgroundColor: 'salmon'
+      // }; 
     }
 
+    
+
+
     return (
+      
       <div className="App">
-        <button onClick={this.togglePersons}>Toggle People</button>
+        <Cockpit
+          title={this.props.appTitle} 
+          togglePersons={this.togglePersons} 
+          showPeople={this.state.showPeople}
+          persons={this.state.persons}></Cockpit>
+        
         {persons}
       </div>
+      
     );
   }
   
 }
 
 export default App;
+
