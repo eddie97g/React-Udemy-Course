@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import './App.css';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary'
 import Cockpit from '../components/Cockpit/Cockpit';
 import Persons from '../components/Persons/Persons';
+import withClass from '../hoc/withClass';
+import AuthContext from '../context/auth-context';
 
 class App extends Component {
 
@@ -12,7 +14,13 @@ class App extends Component {
       {id: 2, name: "Esmie", age: 47},
       {id: 3, name: "Bianca", age: 27}
     ],
-    showPeople: true
+    showPeople: false,
+    changeCounter: 0,
+    authenticated: false
+  }
+
+  componentWillUnmount() {
+    console.log("This will print when the app is unmounted. Used for 'cleanup.'");
   }
 
   togglePersons = () => {
@@ -21,7 +29,10 @@ class App extends Component {
     })
   }
 
-  
+  loginHandler = () => {
+    this.setState({authenticated: true});
+    console.log("logging in");
+  }
 
   deletePersonHandler = (personIndex) => {
     const persons = [...this.state.persons];
@@ -38,8 +49,11 @@ class App extends Component {
 
     const persons = [...this.state.persons]
     persons[personIndex] = person;
-    this.setState({
-      persons: persons
+    this.setState((prevState, props) => {
+      return {
+        persons: persons,
+        changeCounter: prevState.changeCounter + 1
+      }
     });
   }
 
@@ -68,20 +82,22 @@ class App extends Component {
 
     return (
       
-      <div className="App">
+      <Fragment>
+        <AuthContext.Provider value={{authenticated: this.state.authenticated, login: this.loginHandler}}>
         <Cockpit
           title={this.props.appTitle} 
           togglePersons={this.togglePersons} 
           showPeople={this.state.showPeople}
-          persons={this.state.persons}></Cockpit>
+          personsLength={this.state.persons.length}>
+        </Cockpit>
         
         {persons}
-      </div>
+        </AuthContext.Provider>
+      </Fragment>
       
     );
   }
   
 }
 
-export default App;
-
+export default withClass(App, "App");
